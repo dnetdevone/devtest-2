@@ -1,9 +1,9 @@
-﻿Imports System.Data.Entity
+Imports System.Data.Entity
 Imports DevTest2
 Imports TestDataGenerator
 
 Public Class AppDbInitializer
-    Inherits DropCreateDatabaseIfModelChanges(Of AppDbContext)
+    Inherits DropCreateDatabaseAlways(Of AppDbContext)
 
     Protected Overrides Sub Seed(context As AppDbContext)
 
