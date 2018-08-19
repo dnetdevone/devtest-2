@@ -1,4 +1,4 @@
-﻿Public Class HomeController
+Public Class HomeController
     Inherits System.Web.Mvc.Controller
 
     Function Index() As ActionResult
@@ -9,17 +9,21 @@
     Function CsvReport() As ActionResult
 
         Response.ContentType = "text/plain"
-        Response.Write("CustomerId, Name, OrderCount, SalesTotal" & vbCr)
+
+        Dim result As New StringBuilder
+        result.AppendLine("CustomerId, Name, OrderCount, SalesTotal")
 
         Using db As New AppDbContext()
 
+
             'get customers
-            Dim customers = From c In db.Customers
-                            Order By c.CustomerId
-                            Select c
+            Dim customers = (From c In db.Customers
+                             Order By c.CustomerId
+                             Select c).ToList
 
             For Each c In customers
-                Response.Write(String.Format("{0}, {1}, ", c.CustomerId, c.Name))
+
+                result.Append(String.Format("{0}, {1}, ", c.CustomerId, c.Name))
 
                 'get orders
                 Dim orders = From o In db.Orders
@@ -33,11 +37,13 @@
                     salesTotal += o.SalesTotal
                 Next
 
-                Response.Write(String.Format("{0}, {1}", orderCount, salesTotal.ToString("0.##")) & vbCr)
+                result.AppendLine(String.Format("{0}, {1}", orderCount, salesTotal.ToString("0.##")))
+
             Next
 
         End Using
 
+        Response.Write(result.ToString)
         Response.End()
 
         Return Nothing
